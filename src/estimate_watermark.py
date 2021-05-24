@@ -107,14 +107,14 @@ def poisson_reconstruct(gradx, grady, kernel_size=KERNEL_SIZE, num_iters=100, h=
 	Also return the squared difference of every step.
 	h = convergence rate
 	"""
-	print("In poisson_reconstruct...")
+# 	print("In poisson_reconstruct...")
    
 	fxx = cv2.Sobel(gradx, cv2.CV_64F, 1, 0, ksize=kernel_size)
 	fyy = cv2.Sobel(grady, cv2.CV_64F, 0, 1, ksize=kernel_size)
 	laplacian = fxx + fyy
 	m,n,p = laplacian.shape
-	print("laplacian.shape")
-	print(laplacian.shape)
+# 	print("laplacian.shape")
+# 	print(laplacian.shape)
 
 	if boundary_zero == True:
 		est = np.zeros(laplacian.shape)
@@ -187,10 +187,10 @@ def watermark_detector(img, gx, gy, thresh_low=200, thresh_high=220, printval=Fa
 # 	plt.show()
     
 	img_edgemap = (cv2.Canny(img, thresh_low, thresh_high))
-	print("img_edgemap in watermark_detector") 
+# 	print("img_edgemap in watermark_detector") 
 	#imgmap_print = np.expand_dims(img_edgemap, axis=2)
-	plt.imshow(img_edgemap,cmap='gray')
-	plt.show()
+# 	plt.imshow(img_edgemap,cmap='gray')
+# 	plt.show()
     
 	chamfer_dist = cv2.filter2D(img_edgemap.astype(float), -1, Wm)  # 倒角距离？？
 

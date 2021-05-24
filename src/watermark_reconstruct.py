@@ -8,7 +8,7 @@ from src.estimate_watermark import *
 from src.closed_form_matting import *
 from numpy import nan, isnan
 
-def get_cropped_images(foldername, num_images, num_w, start, length, shape):
+def get_cropped_images(foldername, num_images, num_w, start, shape):
     '''
     This is the part where we get all the images, extract their parts, and then add it to our matrix
     '''
@@ -19,7 +19,9 @@ def get_cropped_images(foldername, num_images, num_w, start, length, shape):
     # start, and end are already stored
     # just crop and store images
     file_names = []
-    _s, _l = start, length
+    _s = start
+    lx = shape[0]
+    ly = shape[1]
     index = 0
 
     # Iterate over all images
@@ -33,7 +35,7 @@ def get_cropped_images(foldername, num_images, num_w, start, length, shape):
                 # estimate the watermark part
                 file_names.append(file)
                 for i in range(num_w):
-                    images_cropped[index, :, :, :] = im[_s[i][0]:(_s[i][0]+_l[i][0]), _s[i][1]:(_s[i][1]+_l[i][1])]
+                    images_cropped[index, :, :, :] = im[_s[i][0]:(_s[i][0]+lx), _s[i][1]:(_s[i][1]+ly)]
                     index+=1
                     # print(tmp.shape())
                     
@@ -44,18 +46,19 @@ def get_cropped_images(foldername, num_images, num_w, start, length, shape):
 
     return (images_cropped, file_names)
 
-def get_cropped_images2(foldername, num_images, num_w, start, length, shape):
+def get_cropped_images2(foldername, num_images, start, shape):
     '''
     This is the part where we get all the images, extract their parts, and then add it to our matrix
     '''
-    Num = num_images*num_w
-    images_cropped = np.zeros((Num,) + shape)
+    images_cropped = np.zeros((num_images,) + shape)
     # get images
     # Store all the watermarked images
     # start, and end are already stored
     # just crop and store images
     file_names = []
-    _s, _l = start, length
+    _s = start
+    lx = shape[0]
+    ly = shape[1]
     index = 0
 
     # Iterate over all images
@@ -63,16 +66,12 @@ def get_cropped_images2(foldername, num_images, num_w, start, length, shape):
         _img = cv2.imread(foldername+str(i+1)+"_random.png")
         if _img is not None:
             # estimate the watermark part
-            if _s[i][0]>0 and _s[i][1]>0 and (_s[i][0]+_l[i][0])<300 and (_s[i][1]+_l[i][1])<300:
+            if _s[i][0]>0 and _s[i][1]>0 and (_s[i][0]+lx)<300 and (_s[i][1]+ly)<300:
                 file_names.append(str(i+1)+"_random.png")
-                images_cropped[index, :, :, :] = _img[_s[i][0]:(_s[i][0]+_l[i][0]), _s[i][1]:(_s[i][1]+_l[i][1])]
+                images_cropped[index, :, :, :] = _img[_s[i][0]:(_s[i][0]+lx), _s[i][1]:(_s[i][1]+ly)]
                 index+=1
-#             print(i)
-#             print(_s[i])
-#             plt.imshow(PlotImage(images_cropped[i]))
-#             plt.draw()
         else:
-            print("%s not found."%(file))
+            print("%s not found."%(str(i+1)+"_random.png"))
 
     return (images_cropped, file_names, index)
 
@@ -174,7 +173,7 @@ def estimate_normalized_alpha(J, W_m, num_images=1, threshold=170, invert=False,
     print("Estimating normalized alpha using %d images."%(num_images))
     # for all images, calculate alpha
     for idx in range(num_images):
-        print("estimate_normalized_alpha"+str(idx))
+#         print("estimate_normalized_alpha"+str(idx))
         imgcopy = thr
         alph = closed_form_matte(J[idx], imgcopy)   # closed_form_matting.py
         alpha[idx] = alph
@@ -291,20 +290,20 @@ def solve_images(J, W_m, alpha, W_init, gamma=1, beta=1, lambda_w=0.005, lambda_
             
             Wk[i] = x[:size].reshape(m, n, p)
             Ik[i] = x[size:].reshape(m, n, p)
-            # plt.subplot(3,1,1); plt.imshow(PlotImage(J[i]))
-            # plt.subplot(3,1,2); plt.imshow(PlotImage(Wk[i]))
-            # plt.subplot(3,1,3); plt.imshow(PlotImage(Ik[i]))
-            # plt.draw()
-            # plt.pause(0.001)
+            plt.subplot(3,1,1); plt.imshow(PlotImage(J[i]))
+            plt.subplot(3,1,2); plt.imshow(PlotImage(Wk[i]))
+            plt.subplot(3,1,3); plt.imshow(PlotImage(Ik[i]))
+            plt.draw()
+            plt.pause(0.001)
             print(i)
 
         # Step 2
         print("Step 2")
         W = np.median(Wk, axis=0)
 
-        # plt.imshow(PlotImage(W))
-        # plt.draw()
-        # plt.pause(0.001)
+        plt.imshow(PlotImage(W))
+        plt.draw()
+        plt.pause(0.001)
         
         # Step 3
         print("Step 3")
@@ -334,9 +333,9 @@ def solve_images(J, W_m, alpha, W_init, gamma=1, beta=1, lambda_w=0.005, lambda_
 
         alpha = linalg.spsolve(A1, b1).reshape(m,n,p)
 
-        # plt.imshow(PlotImage(alpha))
-        # plt.draw()
-        # plt.pause(0.001)
+        plt.imshow(PlotImage(alpha))
+        plt.draw()
+        plt.pause(0.001)
     
     return (Wk, Ik, W, alpha)
 
