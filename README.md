@@ -66,3 +66,10 @@ automatic-watermark-detection项目是对paper "On The Effectiveness Of Visible 
 ### 2 执行程序
 
 使用Jupyter notebook打开对应的.ipynb文件，按步执行即可。
+
+
+
+## 展望
+
+- 水印检测方法有待优化
+- 去水印效果还不完美，留有一定的水印痕迹
