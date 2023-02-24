@@ -17,9 +17,6 @@ automatic-watermark-detection项目是对paper "On The Effectiveness Of Visible 
 
 项目包括【满屏水印检测与去除】、【单个随机位置水印检测与去除】两个部分。
 
-**本项目仅供学术研究参考，禁止用于任何商业用途！**
-
-
 
 ## 我们的其他去水印工作
 
